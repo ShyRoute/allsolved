@@ -1,65 +1,76 @@
-import Image from "next/image";
+'use client';
+
+import { useState } from 'react';
+import { Form, ApiResponse } from '@/components/form';
+import { PLATFORMS } from '@/lib/constants/platforms';
 
 export default function Home() {
+  const [result, setResult] = useState<ApiResponse | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <main className='min-h-screen bg-gray-100 p-8'>
+      <div className='max-w-xl mx-auto bg-white p-6 rounded-lg shadow-xl'>
+        <h1 className='text-3xl font-bold text-left mb-6 text-gray-800'>
+          All Solved!
+        </h1>
+
+        <Form
+          onResult={setResult}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+
+        {isLoading && (
+          <div className='text-center mt-6'>
+            <p className='text-blue-600'>Loading...</p>
+          </div>
+        )}
+
+        {result && !isLoading && (
+          <div className='mt-8 border-t pt-6'>
+            <h2 className='text-2xl font-bold mb-4'>
+              Total Solved Problems: {result.totalSolved}
+            </h2>
+
+            <div className="space-y-3">
+                {PLATFORMS.map(platform => {
+                    const handle = result.handles[platform.handleKey];
+                    const count = result.details[platform.id as keyof typeof result.details];
+                    
+                    if (!handle) {
+                        return null; // 핸들이 없으면 표시하지 않음
+                    }
+                    
+                    return (
+                        <div key={platform.id} className="flex justify-between p-3 bg-gray-50 rounded-md">
+                            <span className="font-medium text-gray-700">
+                                {platform.name} (
+                                {count === -1 ? (
+                                    <span className="text-gray-500">{handle}</span>
+                                ) : (
+                                    <a 
+                                        href={platform.userPageUrl(handle)} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="text-blue-600 hover:text-blue-800 hover:underline"
+                                    >
+                                        {handle}
+                                    </a>
+                                )}
+                                )
+                            </span>
+                            <span className={`font-bold text-lg ${
+                                count === -1 ? 'text-red-400' : 
+                                count === 0 ? 'text-gray-400' : ''
+                            }`}>
+                                {count === -1 ? 'N/A' : count}
+                            </span>
+                        </div>
+                    );
+                })}
+            </div>
+          </div>
+        )}
+      </div>
+    </main>
+  )
 }
