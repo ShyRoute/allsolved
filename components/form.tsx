@@ -88,21 +88,33 @@ export const Form: React.FC<FormProps> = ({ onResult }) => {
                         type='text'
                         onChange={(e) => handleChange(platform.handleKey, e.target.value)}
                         placeholder='Enter handle'
-                        className='mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2'
+                        className='mt-1 block w-full border rounded-md shadow-sm p-2'
+                        style={{ 
+                            background: 'var(--input-bg)', 
+                            borderColor: 'var(--input-border)',
+                            color: 'var(--text-primary)'
+                        }}
                         autoComplete='off'
                     />
                 </div>
             ))}
 
             {error && (
-                <div className='text-red-600 border border-red-300 p-3 rounded-md'>
+                <div className='border p-3 rounded-md' style={{
+                    color: 'var(--error-text)',
+                    borderColor: 'var(--error-border)',
+                    background: 'var(--error-bg)'
+                }}>
                     {error}
                 </div>
             )}
 
             <button
                 type='submit'
-                className='w-full py-2 px-4 bg-blue-600 text-white rounded-md font-semibold rounded-md shadow-md hover:bg-blue-700 disabled:opacity-50'
+                className='w-full py-2 px-4 text-white rounded-md font-semibold shadow-md disabled:opacity-50 transition-colors'
+                style={{ background: 'var(--button-bg)' }}
+                onMouseEnter={(e) => e.currentTarget.style.background = 'var(--button-hover)'}
+                onMouseLeave={(e) => e.currentTarget.style.background = 'var(--button-bg)'}
                 disabled={isLoading}
             >
                 {isLoading ? 'Calculating...' : 'Submit'}    
